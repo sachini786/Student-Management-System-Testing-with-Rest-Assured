@@ -17,12 +17,12 @@ class StudentApplicationTests {
 	@Test
 	void testCreateStudent() {
 		String requestBody = """
-            {
-                "email": "sachinifon8@gmail.com",
-                "indexNumber": 1273636,
-                "dateOfBirth": "2000-04-01"
-            }
-        """;
+				    {
+				        "email": "sachinifon8@gmail.com",
+				        "indexNumber": 1273636,
+				        "dateOfBirth": "2000-04-01"
+				    }
+				""";
 
 		given()
 				.header("Content-Type", "application/json")
@@ -36,15 +36,16 @@ class StudentApplicationTests {
 				.body("indexNumber", equalTo(1273636))
 				.body("dateOfBirth", equalTo("2000-04-01"));
 	}
+
 	@Test
 	void testCreateStudentWithExistingEmail() {
 		String duplicateStudent = """
-        {
-          "email": "sachinifon8@gmail.com",
-          "indexNumber": 654321,
-          "dateOfBirth": "1999-12-31"
-        }
-    """;
+				    {
+				      "email": "sachinifon8@gmail.com",
+				      "indexNumber": 654321,
+				      "dateOfBirth": "1999-12-31"
+				    }
+				""";
 
 		given()
 				.header("Content-Type", "application/json")
@@ -56,14 +57,15 @@ class StudentApplicationTests {
 				.statusCode(409) // Expecting 409 Conflict
 				.body(containsString("Email already exists: sachinifon8@gmail.com"));
 	}
+
 	@Test
-	void testCreateStudentWithMissingFields(){
+	void testCreateStudentWithMissingFields() {
 		String duplicateStudent = """
-        {
-          "indexNumber": 6512721,
-          "dateOfBirth": "1999-10-31"
-        }
-    """;
+				    {
+				      "indexNumber": 6512721,
+				      "dateOfBirth": "1999-10-31"
+				    }
+				""";
 
 		given()
 				.header("Content-Type", "application/json")
@@ -75,15 +77,16 @@ class StudentApplicationTests {
 				.statusCode(400)
 				.body(containsString("Email is required and cannot be null or empty."));
 	}
+
 	@Test
 	void updateDetail() {
 		String requestBody = """
-        {
-            "email": "sachinifon8@gmail.com",
-            "indexNumber": 2765243,
-            "dateOfBirth": "2000-04-01"
-        }
-    """;
+				    {
+				        "email": "sachinifon8@gmail.com",
+				        "indexNumber": 2765243,
+				        "dateOfBirth": "2000-04-01"
+				    }
+				""";
 
 		int studentId = 1;
 
@@ -100,12 +103,12 @@ class StudentApplicationTests {
 	@Test
 	void updateDetailWithInvalidStudentId() {
 		String requestBody = """
-        {
-            "email": "sachinifon8@gmail.com",
-            "indexNumber": 2765243,
-            "dateOfBirth": "2000-04-01"
-        }
-    """;
+				    {
+				        "email": "sachinifon8@gmail.com",
+				        "indexNumber": 2765243,
+				        "dateOfBirth": "2000-04-01"
+				    }
+				""";
 
 		int studentId = 999; // Assuming 999 is not in the database
 
@@ -118,6 +121,7 @@ class StudentApplicationTests {
 				.log().body()
 				.statusCode(404);
 	}
+
 	@Test
 	void getStudentById() {
 		int studentId = 1;
@@ -145,6 +149,7 @@ class StudentApplicationTests {
 				.statusCode(404);
 
 	}
+
 	@Test
 	void deleteStudentById() {
 		int studentId = 2;
@@ -157,6 +162,7 @@ class StudentApplicationTests {
 				.log().body()
 				.statusCode(204);
 	}
+
 	@Test
 	void deleteStudentByIdNotFound() {
 		int studentId = 9999;
@@ -172,5 +178,68 @@ class StudentApplicationTests {
 
 	}
 
-}
+	@Test
+	void createStudentWithInvalidDataFormat() {
 
+		String invalidRequestBody = """
+				    {
+				        "email": "gayands@gmail.com",
+				        "indexNumber":"134s353",
+				        "dateOfBirth": "2000-04-01"
+				    }
+				""";
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(invalidRequestBody)
+				.when()
+				.post("/student")
+				.then()
+				.log().body()
+				.statusCode(400);
+
+	}
+
+	@Test
+	void createStudentWithInvalidEmailFormat() {
+		String invalidRequestBody = """
+				    {
+				        "email":"sachiniyee" ,
+				        "indexNumber": 12345678,
+				        "dateOfBirth": "2000-10-01"
+				    }
+				""";
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(invalidRequestBody)
+				.when()
+				.post("/student")
+				.then()
+				.log().body()
+				.statusCode(400);
+
+	}
+
+	@Test
+	void createStudentWithoutBirthOfDate() {
+		String requestBody = """
+				{
+				    "email": "sachinist@gmail.com",
+				    "indexNumber": 12345678
+				}
+				""";
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(requestBody)
+				.when()
+				.post("/student")
+				.then()
+				.log().body()
+				.statusCode(201);
+
+
+	}
+
+}
