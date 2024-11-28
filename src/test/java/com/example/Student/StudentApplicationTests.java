@@ -1,9 +1,6 @@
 package com.example.Student;
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.parsing.Parser;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -59,5 +56,95 @@ class StudentApplicationTests {
 				.statusCode(409) // Expecting 409 Conflict
 				.body(containsString("Email already exists: sachinifon8@gmail.com"));
 	}
+	@Test
+	void testCreateStudentWithMissingFields(){
+		String duplicateStudent = """
+        {
+          "indexNumber": 6512721,
+          "dateOfBirth": "1999-10-31"
+        }
+    """;
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(duplicateStudent)
+				.when()
+				.post("/student")
+				.then()
+				.log().body()
+				.statusCode(400)
+				.body(containsString("Email is required and cannot be null or empty."));
+	}
+	@Test
+	void updateDetail() {
+		String requestBody = """
+        {
+            "email": "sachinifon8@gmail.com",
+            "indexNumber": 2765243,
+            "dateOfBirth": "2000-04-01"
+        }
+    """;
+
+		int studentId = 1;
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(requestBody)
+				.when()
+				.put(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(200);
+	}
+
+	@Test
+	void updateDetailWithInvalidStudentId() {
+		String requestBody = """
+        {
+            "email": "sachinifon8@gmail.com",
+            "indexNumber": 2765243,
+            "dateOfBirth": "2000-04-01"
+        }
+    """;
+
+		int studentId = 999; // Assuming 999 is not in the database
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(requestBody)
+				.when()
+				.put(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(404);
+	}
+	@Test
+	void getStudentById() {
+		int studentId = 1;
+
+		given()
+				.header("Content-Type", "application/json")
+				.when()
+				.get(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(200)
+				.body("student_Id", equalTo(studentId)); // Ensure the field name matches the response JSON
+	}
+
+	@Test
+	void getStudentByIdNotFound() {
+		int studentId = 123;
+
+		given()
+				.header("Content-Type", "application/json")
+				.when()
+				.get(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(404);
+
+	}
 
 }
+
