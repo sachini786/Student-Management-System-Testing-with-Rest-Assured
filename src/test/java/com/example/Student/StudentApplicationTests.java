@@ -145,6 +145,32 @@ class StudentApplicationTests {
 				.statusCode(404);
 
 	}
+	@Test
+	void deleteStudentById() {
+		int studentId = 2;
+
+		given()
+				.header("Content-Type", "application/json")
+				.when()
+				.delete(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(204);
+	}
+	@Test
+	void deleteStudentByIdNotFound() {
+		int studentId = 9999;
+
+		given()
+				.header("Content-Type", "application/json")
+				.when()
+				.delete(String.valueOf(studentId))
+				.then()
+				.log().body()
+				.statusCode(404) // Status code 404 for "Not Found"
+				.body("error", equalTo("Not Found"));
+
+	}
 
 }
 
