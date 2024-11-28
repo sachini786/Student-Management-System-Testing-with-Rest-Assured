@@ -1,6 +1,9 @@
 package com.example.Student;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -36,4 +39,25 @@ class StudentApplicationTests {
 				.body("indexNumber", equalTo(1273636))
 				.body("dateOfBirth", equalTo("2000-04-01"));
 	}
+	@Test
+	void testCreateStudentWithExistingEmail() {
+		String duplicateStudent = """
+        {
+          "email": "sachinifon8@gmail.com",
+          "indexNumber": 654321,
+          "dateOfBirth": "1999-12-31"
+        }
+    """;
+
+		given()
+				.header("Content-Type", "application/json")
+				.body(duplicateStudent)
+				.when()
+				.post("/student")
+				.then()
+				.log().body() // Debug response body if needed
+				.statusCode(409) // Expecting 409 Conflict
+				.body(containsString("Email already exists: sachinifon8@gmail.com"));
+	}
+
 }

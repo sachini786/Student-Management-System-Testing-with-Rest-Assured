@@ -1,17 +1,22 @@
 package com.example.Student.controller;
 
 import com.example.Student.exception.ResourceNotFondException;
+import com.example.Student.model.ErrorResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.example.Student.model.Student;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.example.Student.repository.StudentRepository;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.validation.ObjectError;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/students")
@@ -40,16 +45,29 @@ public class StudentController {
 
     @Operation(summary = "Create a new student")
     @PostMapping("/student")
-    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        if (studentRepository.existsByEmail(student.getEmail())) {
+    public ResponseEntity<?> createStudent(@Valid @RequestBody Student student, BindingResult result) {
+        // Validate input using BindingResult
+        if (result.hasErrors()) {
+            String errors = result.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage) // Get validation error messages
+                    .collect(Collectors.joining(", ")); // Join messages into a single string
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(errors);
         }
 
+        // Check for duplicate email
+        if (studentRepository.existsByEmail(student.getEmail())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Email already exists: " + student.getEmail());
+        }
+
+        // Save the valid student
         Student savedStudent = studentRepository.save(student);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
     }
+
 
     @Operation(summary = "Update an existing student")
     @PutMapping("{student_id}")
