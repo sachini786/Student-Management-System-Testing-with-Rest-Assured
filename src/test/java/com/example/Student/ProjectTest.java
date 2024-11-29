@@ -97,5 +97,69 @@ public class ProjectTest {
                 .statusCode(200)
                 .body("projectName.trim()", equalTo("Payment management system"));
     }
+    @Test
+    public void updateProjectInvalidId() {
+        int project_id = 99999;
+        String requestBody = "{\"projectName\": \"Payment management system\", \"studentId\": 99999}";
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(requestBody)
+                .when()
+                .put(String.valueOf(project_id))
+                .then()
+                .statusCode(404);
+
+    }
+    @Test
+    public void updateProjectMissingRequiredFields() {
+        int project_id = 1;
+
+        String requestBody = "{\"studentId\": 1}";
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(requestBody)
+                .when()
+                .put(String.valueOf(project_id))
+                .then()
+                .statusCode(404);
+
+    }
+    @Test
+    public void deleteProjectValidId() {
+        int project_id = 2;
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .delete(String.valueOf(project_id))
+                .then()
+                .statusCode(204);
+    }
+    @Test
+    public void deleteProjectInvalidId() {
+        int project_id = 99999;
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .delete(String.valueOf(project_id))
+                .then()
+                .statusCode(404) ;
+    }
+    @Test
+    public void createProjectInvalidInput() {
+
+        String requestBody = "{\"projectName\": \"payment management system\", \"studentId\": \"sachini\"}";
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(requestBody)
+                .when()
+                .post("/create")
+                .then()
+                .statusCode(400) ;
+    }
 
 }
