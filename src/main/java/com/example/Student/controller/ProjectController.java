@@ -23,13 +23,22 @@ public class ProjectController {
 
 	@Operation(summary = "Create a new project for a student")
 	@PostMapping("/create")
-	public ResponseEntity<Project> createProjectForStudent(@RequestBody Project project) {
+	public ResponseEntity<?> createProjectForStudent(@RequestBody Project project) {
+		// Validate input: Check if project name or student ID is null
 		if (project.getProjectName() == null || project.getStudentId() == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body("Project name and student ID must be provided.");
 		}
 
+		// Save the valid project
 		Project savedProject = projectRepository.save(project);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedProject);
+
+		// Return a response with success message and the created project
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body("Project successfully created.");
+
 	}
 	@Operation(summary = "Get all projects by student ID")
 	@GetMapping("/student/{student_Id}")
