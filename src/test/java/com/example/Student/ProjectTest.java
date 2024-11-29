@@ -54,5 +54,19 @@ public class ProjectTest {
                 .statusCode(400) // Expected status code for bad request
                 .body(equalTo("Project name and student ID must be provided.")); // Expected error message
     }
+    @Test
+    public void getProjectByIdValid() {
+        int project_id = 1;
+
+        given()
+                .log().all() // Log request details for debugging
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(project_id))
+                .then()
+                .log().all()
+                .statusCode(200);
+
+    }
 
 }
