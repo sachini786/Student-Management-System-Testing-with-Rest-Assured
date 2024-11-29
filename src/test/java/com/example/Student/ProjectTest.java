@@ -68,5 +68,34 @@ public class ProjectTest {
                 .statusCode(200);
 
     }
+    @Test
+    public void getProjectByIdInvalid() {
+        int project_id = 99999; // Replace with an ID that does not exist in your database
+
+        given()
+                .log().all() // Log request details for debugging
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(project_id))
+                .then()
+                .log().all()
+                .statusCode(404);
+
+    }
+
+    @Test
+    public void updateProjectValidId() {
+        int project_id = 1;
+        String requestBody = "{\"projectName\": \"Payment management system\", \"studentId\": 1}";
+
+        given()
+                .header("Content-Type", "application/json")
+                .body(requestBody)
+                .when()
+                .put("/" + project_id)
+                .then()
+                .statusCode(200)
+                .body("projectName.trim()", equalTo("Payment management system"));
+    }
 
 }

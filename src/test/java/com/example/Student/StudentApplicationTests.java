@@ -133,7 +133,7 @@ class StudentApplicationTests {
 				.then()
 				.log().body()
 				.statusCode(200)
-				.body("student_Id", equalTo(studentId)); // Ensure the field name matches the response JSON
+				.body("student_Id", equalTo(studentId));
 	}
 
 	@Test

@@ -53,13 +53,21 @@ public class ProjectController {
 	@Operation(summary = "Get a project by its ID")
 	@GetMapping("/{project_id}")
 	public ResponseEntity<Project> getProjectById(@PathVariable Integer project_id) {
-		Optional<Project> project = projectRepository.findById(project_id);
-		if (project.isPresent()) {
-			return ResponseEntity.ok(project.get());
-		} else {
-			throw new ResourceNotFondException("Project not found with ID: " + project_id);
-		}
+		System.out.println("Fetching project with ID: " + project_id);
+
+		Project project = projectRepository.findById(project_id)
+				.orElseThrow(() -> {
+					String errorMessage = "Project not found with ID: " + project_id;
+					System.out.println(errorMessage);
+					return new ResourceNotFondException(errorMessage);
+				});
+
+		// Print success message
+		System.out.println("Project found: " + project);
+
+		return ResponseEntity.ok(project);
 	}
+
 
 	@Operation(summary = "Update a project")
 	@PutMapping("/{project_id}")
