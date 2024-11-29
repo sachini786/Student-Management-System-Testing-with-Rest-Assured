@@ -12,8 +12,8 @@ public class ProjectTest {
     @BeforeAll
     static void setup() {
         RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8080; // Ensure this matches your Spring Boot application port
-        RestAssured.basePath = "/api/projects"; // Adjusted to match the actual endpoint
+        RestAssured.port = 8080;
+        RestAssured.basePath = "/api/projects";
     }
 
     @Test
@@ -26,14 +26,14 @@ public class ProjectTest {
         """;
 
         given()
-                .log().all() // Log request details for debugging
+                .log().all()
                 .header("Content-Type", "application/json")
                 .body(requestBody)
                 .when()
-                .post("/create") // Ensure the path matches your controller
+                .post("/create")
                 .then()
-                .log().all() // Log response details for debugging
-                .statusCode(201) // Adjust expected status code based on your controller
+                .log().all()
+                .statusCode(201)
                 .body(containsString("Project successfully created"));
 
     }
@@ -43,22 +43,22 @@ public class ProjectTest {
         String requestBody = "{ \"studentId\": 1 }"; // Missing projectName
 
         given()
-                .log().all() // Log request details for debugging
+                .log().all()
                 .header("Content-Type", "application/json")
                 .body(requestBody)
                 .when()
-                .post("/create") // Ensure this path matches your controller's endpoint
+                .post("/create")
                 .then()
-                .log().all() // Log response details for debugging
-                .statusCode(400) // Expected status code for bad request
-                .body(equalTo("Project name and student ID must be provided.")); // Expected error message
+                .log().all()
+                .statusCode(400)
+                .body(equalTo("Project name and student ID must be provided."));
     }
     @Test
     public void getProjectByIdValid() {
         int project_id = 1;
 
         given()
-                .log().all() // Log request details for debugging
+                .log().all()
                 .header("Content-Type", "application/json")
                 .when()
                 .get(String.valueOf(project_id))
@@ -69,10 +69,10 @@ public class ProjectTest {
     }
     @Test
     public void getProjectByIdInvalid() {
-        int project_id = 99999; // Replace with an ID that does not exist in your database
+        int project_id = 99999;
 
         given()
-                .log().all() // Log request details for debugging
+                .log().all()
                 .header("Content-Type", "application/json")
                 .when()
                 .get(String.valueOf(project_id))
@@ -176,7 +176,6 @@ public class ProjectTest {
     public void getProjectsForInvalidStudentId() {
         int studentId = 999;
 
-        // Send a GET request to retrieve projects for an invalid student ID
         given()
                 .header("Content-Type", "application/json")
                 .when()

@@ -110,7 +110,7 @@ class StudentApplicationTests {
 				    }
 				""";
 
-		int studentId = 999; // Assuming 999 is not in the database
+		int studentId = 999;
 
 		given()
 				.header("Content-Type", "application/json")
