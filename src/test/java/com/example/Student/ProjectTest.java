@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class ProjectTest {
 
@@ -160,6 +159,59 @@ public class ProjectTest {
                 .post("/create")
                 .then()
                 .statusCode(400) ;
+    }
+    @Test
+    public void getProjectCountForStudentId1() {
+        int studentId = 1;
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(studentId))
+                .then()
+                .statusCode(200)
+                .body("size()", greaterThanOrEqualTo(3))
+                .body("size()", equalTo(3));
+    }
+    @Test
+    public void getProjectsForInvalidStudentId() {
+        int studentId = 999;
+
+        // Send a GET request to retrieve projects for an invalid student ID
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(studentId))
+                .then()
+                .statusCode(404);
+
+    }
+    @Test
+    public void getStudentByProjectId() {
+        int project_id = 1;
+
+
+        int studentId = given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(project_id))
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("studentId");
+
+        // Print the student ID
+        System.out.println("The student ID is: " + studentId);
+    }
+    @Test
+    public void getStudentByInvalidProjectId() {
+        int project_id = 99999;
+
+        given()
+                .header("Content-Type", "application/json")
+                .when()
+                .get(String.valueOf(project_id))
+                .then()
+                .statusCode(404);
     }
 
 }
